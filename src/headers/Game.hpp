@@ -16,5 +16,5 @@ class Game{
         SDL_Texture *mWindowTexture = nullptr;
         SDL_Renderer* mRenderer = nullptr;
 
-        void SetPixel(SDL_Surface* surface, int x, int y, uint8_t r, uint8_t g, uint8_t b);
+        void Render(SDL_Surface* surface);
 };
