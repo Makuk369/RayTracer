@@ -1,4 +1,5 @@
 #include "headers/RTRenderer.hpp"
+#include "headers/Structures.hpp"
 
 void RTRenderer::Render(SDL_Surface* surface){
 	SDL_LockSurface(surface);
@@ -9,8 +10,10 @@ void RTRenderer::Render(SDL_Surface* surface){
 	uint32_t color = 0xff000000; //ARGB
 
 	// looping through every pixel
-	for (int x = 0; x < surface->w; x++){
-		for (int y = 0; y < surface->h; y++){
+	for (int y = 0; y < surface->h; y++){
+		for (int x = 0; x < surface->w; x++){
+
+			Vec2 coord = {x / (float)surface->w, y / (float)surface->h};
 
 			color = SDL_rand_bits();
 			color |= 0xff000000;
