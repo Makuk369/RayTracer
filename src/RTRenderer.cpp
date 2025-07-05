@@ -60,8 +60,13 @@ glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 	glm::vec3 hitPoint = rayOrigin + rayDirection * closestT;
 	glm::vec3 normal = glm::normalize(hitPoint);
 
+	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));
+
+	float d = glm::max(glm::dot(normal, -lightDir), 0.0f); // == cos(angle)
+
 	// normal * 0.5f + 0.5f  (-1 - 1 -> 0 - 1)
-	glm::vec4 sphereColor(normal * 0.5f + 0.5f, 1.0f);
+	glm::vec4 sphereColor(1.0f, 0.0f, 1.0f, 1.0f);
+	sphereColor *= d;
     return sphereColor;
 }
 
