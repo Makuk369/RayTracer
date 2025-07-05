@@ -32,7 +32,7 @@ void RTRenderer::Render(SDL_Surface* surface){
 // returns color of set pixel (format = ARGB 0xff000000)
 glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 
-	glm::vec3 rayOrigin(0.0f, 0.0f, 2.0f);
+	glm::vec3 rayOrigin(0.0f, 0.0f, 1.0f);
 	glm::vec3 rayDirection(coord.x, coord.y, -1.0f);
 	float radius = 0.5f;
 
@@ -58,8 +58,10 @@ glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 	float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
 
 	glm::vec3 hitPoint = rayOrigin + rayDirection * closestT;
+	glm::vec3 normal = glm::normalize(hitPoint);
 
-	glm::vec4 sphereColor(hitPoint, 1.0f);
+	// normal * 0.5f + 0.5f  (-1 - 1 -> 0 - 1)
+	glm::vec4 sphereColor(normal * 0.5f + 0.5f, 1.0f);
     return sphereColor;
 }
 
