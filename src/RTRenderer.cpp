@@ -11,7 +11,7 @@ void RTRenderer::Render(SDL_Surface* surface){
 	for (int y = 0; y < surface->h; y++){
 		for (int x = 0; x < surface->w; x++){
 
-			Vec2 coord = {x / (float)surface->w, y / (float)surface->h}; // 0-surface size -> 0-1
+			Vec2 coord = {x / (float)surface->w, 1 - y / (float)surface->h}; // 0-surface size -> 0-1
 
 			// ----- setting pixels -----
 			Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels + y * surface->pitch + x*pixelFormatDetails->bytes_per_pixel);
