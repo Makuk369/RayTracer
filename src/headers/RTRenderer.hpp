@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include "Structures.hpp"
+#include "glm/glm.hpp"
 
 class RTRenderer{
     public:
@@ -9,5 +9,5 @@ class RTRenderer{
         void Render(SDL_Surface* surface);
 
     private:
-        uint32_t PerPixel(Vec2 coord);
+        uint32_t PerPixel(glm::vec2 coord);
 };

@@ -20,7 +20,7 @@ file(GLOB_RECURSE BUILD_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 add_executable(${PROJECT_NAME} ${BUILD_FILES})
 
 # Add header files
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/headers")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # Link against SDL3
 # # Na pridanie dalsej lib staci pridat: NazovLib::NazovLib
