@@ -9,5 +9,6 @@ class RTRenderer{
         void Render(SDL_Surface* surface);
 
     private:
-        uint32_t PerPixel(glm::vec2 coord);
+        glm::vec4 PerPixel(glm::vec2 coord);
+        uint32_t ConvertVec4ToARGB(const glm::vec4 colorVec);
 };

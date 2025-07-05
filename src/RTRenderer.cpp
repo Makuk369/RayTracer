@@ -19,7 +19,9 @@ void RTRenderer::Render(SDL_Surface* surface){
 
 			// ----- setting pixels -----
 			Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels + y * surface->pitch + x*pixelFormatDetails->bytes_per_pixel);
-  			*target_pixel = PerPixel(coord);
+			glm::vec4 color = PerPixel(coord);
+			color = glm::clamp(color, glm::vec4(0.0f), glm::vec4(1.0f));
+  			*target_pixel = ConvertVec4ToARGB(color);
 			// --------------------------
 		}
 	}
@@ -28,7 +30,7 @@ void RTRenderer::Render(SDL_Surface* surface){
 }
 
 // returns color of set pixel (format = ARGB 0xff000000)
-uint32_t RTRenderer::PerPixel(glm::vec2 coord){
+glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 
 	glm::vec3 rayOrigin(0.0f, 0.0f, 2.0f);
 	glm::vec3 rayDirection(coord.x, coord.y, -1.0f);
@@ -47,9 +49,25 @@ uint32_t RTRenderer::PerPixel(glm::vec2 coord){
 	// Quadratic forumula discriminant:
 	// b^2 - 4ac
 	float discriminant = b * b - 4.0f * a * c;
-	if (discriminant >= 0.0f){
-		return 0xffff00ff;
+	if (discriminant < 0.0f){ // ray missed
+		return glm::vec4(0, 0, 0, 1);
 	}
+	
+	// (-b +- sqrt(discriminant)) / 2a
+	// float t0 = (-b + glm::sqrt(discriminant)) / (2.0f * a);
+	float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
 
-    return 0xff000000;
+	glm::vec3 hitPoint = rayOrigin + rayDirection * closestT;
+
+	glm::vec4 sphereColor(hitPoint, 1.0f);
+    return sphereColor;
+}
+
+uint32_t RTRenderer::ConvertVec4ToARGB(const glm::vec4 colorVec){
+	uint8_t r = (uint8_t)(colorVec.r * 255.0f);
+	uint8_t g = (uint8_t)(colorVec.g * 255.0f);
+	uint8_t b = (uint8_t)(colorVec.b * 255.0f);
+	uint8_t a = (uint8_t)(colorVec.a * 255.0f);
+
+	return ((a << 24) | (r << 16) | (g << 8) | b);
 }
