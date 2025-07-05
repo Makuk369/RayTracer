@@ -15,6 +15,4 @@ class Game{
         SDL_Surface* mWindowSurface = nullptr;
         SDL_Texture *mWindowTexture = nullptr;
         SDL_Renderer* mRenderer = nullptr;
-
-        void Render(SDL_Surface* surface);
 };

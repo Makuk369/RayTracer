@@ -1,6 +1,7 @@
 #include "headers/Game.hpp"
 #include "headers/GameSettings.hpp"
 #include "headers/Timer.hpp"
+#include "headers/RTRenderer.hpp"
 
 Game::Game(){
 	if(!SDL_Init(SDL_INIT_VIDEO)){
@@ -8,11 +9,11 @@ Game::Game(){
 		return;
 	}
 
-	if((mWindow = SDL_CreateWindow("Ray Tracer", RayTracerSetings::gWindowWidth, RayTracerSetings::gWindowHeight, 0)) == nullptr){
+	if((mWindow = SDL_CreateWindow("Ray Tracer", RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT, 0)) == nullptr){
 		SDL_Log( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
 		return;
 	}
-	// if(!SDL_CreateWindowAndRenderer("Snake", RayTracerSetings::gWindowWidth, RayTracerSetings::gWindowHeight, 0, &mWindow, &mRenderer)){
+	// if(!SDL_CreateWindowAndRenderer("Snake", RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT, 0, &mWindow, &mRenderer)){
 	// 	SDL_Log( "Window and renderer could not be created! SDL Error: %s\n", SDL_GetError() );
 	// 	return;
 	// }
@@ -48,18 +49,18 @@ void Game::Run(){
 	bool isRunning = true;
 
 	SDL_Event event;
+	float mouseX = 0.f;
+	float mouseY = 0.f;
+	bool mouseIsPressed = false;
 
 	Timer timer;
 	timer.Start();
 	float deltaTime = 0;
-	const float MAX_FPS = 60;
 	unsigned int frameCount = 0;
 	float fpsTimer = 1;
-	float updateDelay = 1/MAX_FPS;
+	float updateDelay = 1.f/RayTracerSetings::MAX_FPS;
 
-	float mouseX = 0.f;
-	float mouseY = 0.f;
-	bool mouseIsPressed = false;
+	RTRenderer renderer;
 
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){
@@ -101,13 +102,13 @@ void Game::Run(){
 		updateDelay -= deltaTime;
 		if(updateDelay <= 0.f){
 			// SDL_Log("update %f!\n", updateDelay);
-			updateDelay = 1/MAX_FPS;
+			updateDelay = 1.f/RayTracerSetings::MAX_FPS;
 			frameCount++;
 
 			//Clear screen
 			// SDL_RenderClear(mRenderer);
 
-			Render(mWindowSurface);
+			renderer.Render(mWindowSurface);
 
 			// SDL_RenderTexture(mRenderer, mWindowTexture, NULL, NULL);
 			
@@ -116,36 +117,13 @@ void Game::Run(){
 			// SDL_RenderPresent(mRenderer);
 		}
 
-		fpsTimer -= deltaTime;
-		if(fpsTimer <= 0.f){
-			fpsTimer = 1.f;
-			SDL_Log("FPS = %u\n", frameCount);
-			frameCount = 0;
+		if(RayTracerSetings::SHOW_FPS){
+			fpsTimer -= deltaTime;
+			if(fpsTimer <= 0.f){
+				fpsTimer = 1.f;
+				SDL_Log("FPS = %u; %.2fms per frame\n", frameCount, (1.f/frameCount)*1000);
+				frameCount = 0;
+			}
 		}
 	}
-}
-
-void Game::Render(SDL_Surface* surface){
-	SDL_LockSurface(mWindowSurface);
-	SDL_PixelFormat pixelFormat = surface->format;
-	const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(pixelFormat);
-	uint8_t* pixelArray = (uint8_t*)surface->pixels;
-
-	uint8_t r = 0;
-	uint8_t g = 0;
-	uint8_t b = 0;
-
-	// looping through every pixel
-	for (int x = 0; x < surface->w; x++){
-		for (int y = 0; y < surface->h; y++){
-			r = (uint8_t)SDL_rand(256);
-			g = (uint8_t)SDL_rand(256);
-			b = (uint8_t)SDL_rand(256);
-			pixelArray[y*surface->pitch + x*pixelFormatDetails->bytes_per_pixel + 0] = b; // b
-			pixelArray[y*surface->pitch + x*pixelFormatDetails->bytes_per_pixel + 1] = g; // g
-			pixelArray[y*surface->pitch + x*pixelFormatDetails->bytes_per_pixel + 2] = r; // r
-		}
-	}
-
-	SDL_UnlockSurface(mWindowSurface);
 }
