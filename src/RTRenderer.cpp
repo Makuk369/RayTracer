@@ -10,16 +10,20 @@ void RTRenderer::Render(SDL_Surface* surface, const Camera& camera){
 	const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(pixelFormat);
 	uint8_t* pixelArray = (uint8_t*)surface->pixels;
 
+	Ray ray;
+	ray.origin = camera.GetPosition();
+	
 	// looping through every pixel
 	for (int y = 0; y < surface->h; y++){
 		for (int x = 0; x < surface->w; x++){
-
-			glm::vec2 coord(x / (float)surface->w, 1 - y / (float)surface->h); // 0 - surface size -> 0 - 1
-			coord = coord * 2.0f - 1.0f; // 0 - 1 -> -1 - 1
-
+			
+			// glm::vec2 coord(x / (float)surface->w, 1 - y / (float)surface->h); // 0 - surface size -> 0 - 1
+			// coord = coord * 2.0f - 1.0f; // 0 - 1 -> -1 - 1
+			ray.direction = camera.GetRayDirections()[x + y * surface->w];
+			
 			// ----- setting pixels -----
-			Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels + y * surface->pitch + x*pixelFormatDetails->bytes_per_pixel);
-			glm::vec4 color = PerPixel(coord);
+			Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels + y * surface->pitch + x * pixelFormatDetails->bytes_per_pixel);
+			glm::vec4 color = TraceRay(ray);
 			color = glm::clamp(color, glm::vec4(0.0f), glm::vec4(1.0f));
   			*target_pixel = ConvertVec4ToARGB(color);
 			// --------------------------
@@ -30,10 +34,8 @@ void RTRenderer::Render(SDL_Surface* surface, const Camera& camera){
 }
 
 // returns color of set pixel (format = ARGB 0xff000000)
-glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
-
-	glm::vec3 rayOrigin(0.0f, 0.0f, 1.0f);
-	glm::vec3 rayDirection(coord.x, coord.y, -1.0f);
+glm::vec4 RTRenderer::TraceRay(const Ray& ray)
+{
 	float radius = 0.5f;
 
 	// (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
@@ -42,9 +44,9 @@ glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 	// b = ray direction
 	// r = radius
 	// t = hit distance
-	float a = glm::dot(rayDirection, rayDirection);
-	float b = 2.0f * glm::dot(rayOrigin, rayDirection);
-	float c = glm::dot(rayOrigin, rayOrigin) - radius * radius;
+	float a = glm::dot(ray.direction, ray.direction);
+	float b = 2.0f * glm::dot(ray.origin, ray.direction);
+	float c = glm::dot(ray.origin, ray.origin) - radius * radius;
 
 	// Quadratic forumula discriminant:
 	// b^2 - 4ac
@@ -57,7 +59,7 @@ glm::vec4 RTRenderer::PerPixel(glm::vec2 coord){
 	// float t0 = (-b + glm::sqrt(discriminant)) / (2.0f * a);
 	float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
 
-	glm::vec3 hitPoint = rayOrigin + rayDirection * closestT;
+	glm::vec3 hitPoint = ray.origin + ray.direction * closestT;
 	glm::vec3 normal = glm::normalize(hitPoint);
 
 	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));

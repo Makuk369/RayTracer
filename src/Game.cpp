@@ -3,7 +3,7 @@
 #include "headers/Timer.hpp"
 
 Game::Game()
-	: mCamera(45.0f, 0.1f, 100.0f)
+	: mCamera(45.0f, 0.1f, 100.0f, RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT)
 {
 	if(!SDL_Init(SDL_INIT_VIDEO)){
 		SDL_Log( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );

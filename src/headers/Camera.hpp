@@ -5,7 +5,7 @@
 
 class Camera{
     public:
-        Camera(float verticalFOV, float nearClip, float farClip);
+        Camera(float verticalFOV, float nearClip, float farClip, uint32_t screenWidth, uint32_t screenHeight);
         ~Camera() = default;
 
         void OnUpdate(SDL_Event inputEvent, float deltaTime);

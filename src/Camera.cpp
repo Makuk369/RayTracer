@@ -6,11 +6,15 @@
 
 #include <SDL3/SDL_log.h>
 
-Camera::Camera(float verticalFOV, float nearClip, float farClip)
-	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip)
+Camera::Camera(float verticalFOV, float nearClip, float farClip, uint32_t screenWidth, uint32_t screenHeight)
+	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip), mViewportWidth(screenWidth), mViewportHeight(screenHeight)
 {
 	mForwardDirection = glm::vec3(0, 0, -1);
 	mPosition = glm::vec3(0, 0, 3);
+
+	SDL_Log("Camera init!\n");
+	RecalculateView();
+	RecalculateRayDirections();
 }
 
 void Camera::OnUpdate(SDL_Event inputEvent, float deltaTime)
@@ -97,6 +101,8 @@ void Camera::RecalculateView()
 
 void Camera::RecalculateRayDirections()
 {
+	SDL_Log("Racalculating rays!\n");
+
 	mRayDirections.resize(mViewportWidth * mViewportHeight);
 
 	for (uint32_t y = 0; y < mViewportHeight; y++){
