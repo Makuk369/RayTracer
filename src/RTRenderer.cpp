@@ -44,9 +44,12 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 	// b = ray direction
 	// r = radius
 	// t = hit distance
+
+	glm::vec3 origin = ray.origin - glm::vec3{0.0f, 0.0f, 0.0f};
+
 	float a = glm::dot(ray.direction, ray.direction);
-	float b = 2.0f * glm::dot(ray.origin, ray.direction);
-	float c = glm::dot(ray.origin, ray.origin) - radius * radius;
+	float b = 2.0f * glm::dot(origin, ray.direction);
+	float c = glm::dot(origin, origin) - radius * radius;
 
 	// Quadratic forumula discriminant:
 	// b^2 - 4ac
@@ -59,10 +62,10 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 	// float t0 = (-b + glm::sqrt(discriminant)) / (2.0f * a);
 	float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
 
-	glm::vec3 hitPoint = ray.origin + ray.direction * closestT;
+	glm::vec3 hitPoint = origin + ray.direction * closestT;
 	glm::vec3 normal = glm::normalize(hitPoint);
 
-	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));
+	glm::vec3 lightDir = glm::normalize(glm::vec3(1, 0, 0));
 
 	float d = glm::max(glm::dot(normal, -lightDir), 0.0f); // == cos(angle)
 

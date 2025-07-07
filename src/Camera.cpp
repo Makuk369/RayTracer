@@ -10,11 +10,11 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip, uint32_t screen
 	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip), mViewportWidth(screenWidth), mViewportHeight(screenHeight)
 {
 	mForwardDirection = glm::vec3(0, 0, -1);
-	mPosition = glm::vec3(0, 0, 3);
+	mPosition = glm::vec3(0, 0, 1);
 
-	SDL_Log("Camera init!\n");
 	RecalculateView();
 	RecalculateRayDirections();
+	SDL_Log("Camera init!\n");
 }
 
 void Camera::OnUpdate(SDL_Event inputEvent, float deltaTime)
@@ -32,13 +32,14 @@ void Camera::OnUpdate(SDL_Event inputEvent, float deltaTime)
     else if (inputEvent.type == SDL_EVENT_MOUSE_BUTTON_UP){
         mRMBisHeld = false;
         SDL_ShowCursor();
-        return;
     }
+
+	if(!mRMBisHeld) return;
 
 	bool moved = false;
 
-	constexpr glm::vec3 upDirection(0.0f, 1.0f, 0.0f);
-	glm::vec3 rightDirection = glm::cross(mForwardDirection, upDirection);
+	constexpr glm::vec3 upDirection(0.0f, -1.0f, 0.0f);
+	glm::vec3 rightDirection = -glm::cross(mForwardDirection, upDirection);
 
 	float speed = 5.0f;
 
@@ -52,27 +53,27 @@ void Camera::OnUpdate(SDL_Event inputEvent, float deltaTime)
             mPosition -= mForwardDirection * speed * deltaTime;
             moved = true;
         }
-        if(inputEvent.key.key == SDLK_A){
-            mPosition -= rightDirection * speed * deltaTime;
-            moved = true;
-        }
-        else if(inputEvent.key.key == SDLK_D){
+        if(inputEvent.key.key == SDLK_D){
             mPosition += rightDirection * speed * deltaTime;
             moved = true;
         }
+        else if(inputEvent.key.key == SDLK_A){
+			mPosition -= rightDirection * speed * deltaTime;
+            moved = true;
+        }
         if(inputEvent.key.key == SDLK_SPACE){
-            mPosition -= upDirection * speed * deltaTime;
+            mPosition += upDirection * speed * deltaTime;
             moved = true;
         }
         else if(inputEvent.key.key == SDLK_C){
-            mPosition += upDirection * speed * deltaTime;
+            mPosition -= upDirection * speed * deltaTime;
             moved = true;
         }
     }
 
 	// Rotation
 	if (delta.x != 0.0f || delta.y != 0.0f){
-		float pitchDelta = delta.y * GetRotationSpeed(); // around x-axis
+		float pitchDelta = delta.y * -GetRotationSpeed(); // around x-axis
 		float yawDelta = delta.x * GetRotationSpeed(); // around y-axis
 
 		glm::quat q = glm::normalize(glm::cross(glm::angleAxis(-pitchDelta, rightDirection), glm::angleAxis(-yawDelta, glm::vec3(0.f, 1.0f, 0.0f))));
@@ -95,7 +96,7 @@ void Camera::RecalculateProjection()
 
 void Camera::RecalculateView()
 {
-	mView = glm::lookAt(mPosition, mPosition + mForwardDirection, glm::vec3(0, 1, 0));
+	mView = glm::lookAt(mPosition, mPosition + mForwardDirection, glm::vec3(0, -1, 0));
 	mInverseView = glm::inverse(mView);
 }
 
