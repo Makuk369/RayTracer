@@ -4,7 +4,7 @@
 
 // }
 
-void RTRenderer::Render(SDL_Surface* surface){
+void RTRenderer::Render(SDL_Surface* surface, const Camera& camera){
     SDL_LockSurface(surface);
 	SDL_PixelFormat pixelFormat = surface->format;
 	const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(pixelFormat);

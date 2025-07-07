@@ -42,6 +42,7 @@ class Camera{
         // Cached ray directions
         std::vector<glm::vec3> mRayDirections;
 
+        bool mRMBisHeld = false;
         glm::vec2 mMousePos{0.0f};
         glm::vec2 mLastMousePos{0.0f, 0.0f};
 

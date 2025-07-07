@@ -1,9 +1,10 @@
 #include "headers/Game.hpp"
 #include "headers/GameSettings.hpp"
 #include "headers/Timer.hpp"
-#include "headers/RTRenderer.hpp"
 
-Game::Game(){
+Game::Game()
+	: mCamera(45.0f, 0.1f, 100.0f)
+{
 	if(!SDL_Init(SDL_INIT_VIDEO)){
 		SDL_Log( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
 		return;
@@ -14,11 +15,11 @@ Game::Game(){
 		return;
 	}
 	// if(!SDL_CreateWindowAndRenderer("Snake", RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT, 0, &mWindow, &mRenderer)){
-	// 	SDL_Log( "Window and renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+	// 	SDL_Log( "Window and mRTRenderer could not be created! SDL Error: %s\n", SDL_GetError() );
 	// 	return;
 	// }
 	//Enable vsync
-	// SDL_SetRenderVSync(renderer, 1);
+	// SDL_SetRenderVSync(mRTRenderer, 1);
 	// SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255); // white = 255, 255, 255, 255
 	
 	if((mWindowSurface = SDL_GetWindowSurface(mWindow)) == nullptr){
@@ -60,55 +61,27 @@ void Game::Run(){
 	float fpsTimer = 1;
 	float updateDelay = 1.f/RayTracerSetings::MAX_FPS;
 
-	RTRenderer renderer;
-
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){
+		deltaTime = timer.getDeltaTime();
+
 		while(SDL_PollEvent(&event) != 0){
 			if(event.type == SDL_EVENT_QUIT){
 				isRunning = false;
 			}
-			else if(event.type == SDL_EVENT_MOUSE_MOTION || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_UP){
-				// if(event.type == SDL_EVENT_MOUSE_BUTTON_DOWN){
-				// 	mouseIsPressed = true;
-				// }
-				// if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
-				// 	mouseIsPressed = false;
-				// }
-				// if(mouseIsPressed){
-				// 	//Get mouse position
-				// 	SDL_GetMouseState(&mouseX, &mouseY);
-				// }
-			}
-			else if(event.type == SDL_EVENT_KEY_DOWN){
-				if(event.key.key == SDLK_SPACE){
-					// if(mWindowTexture != nullptr){
-					// 	SDL_DestroyTexture(mWindowTexture);
-					// 	mWindowTexture = nullptr;
-					// }
 
-					// mWindowTexture = SDL_CreateTextureFromSurface(mRenderer, mWindowSurface);
-					// if(mWindowTexture == nullptr){
-					// 	SDL_Log("Unable to create texture from mWindowSurface! SDL Error: %s\n", SDL_GetError());
-					// }
-					// else{
-					// 	SDL_Log("Updated mWindowTexture!\n");
-					// }
-				}
-			}
-		}
+			mCamera.OnUpdate(event, deltaTime);
+    	}
 
-		deltaTime = timer.getDeltaTime();
 		updateDelay -= deltaTime;
 		if(updateDelay <= 0.f){
-			// SDL_Log("update %f!\n", updateDelay);
 			updateDelay = 1.f/RayTracerSetings::MAX_FPS;
 			frameCount++;
 
 			//Clear screen
 			// SDL_RenderClear(mRenderer);
 
-			renderer.Render(mWindowSurface);
+			mRTRenderer.Render(mWindowSurface, mCamera);
 
 			// SDL_RenderTexture(mRenderer, mWindowTexture, NULL, NULL);
 			

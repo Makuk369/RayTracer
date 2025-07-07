@@ -1,7 +1,10 @@
 #include "headers/Camera.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
+
+#include <SDL3/SDL_log.h>
 
 Camera::Camera(float verticalFOV, float nearClip, float farClip)
 	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip)
@@ -16,13 +19,17 @@ void Camera::OnUpdate(SDL_Event inputEvent, float deltaTime)
 	glm::vec2 delta = (mMousePos - mLastMousePos) * 0.002f;
 	mLastMousePos = mMousePos;
 
-	if(!(inputEvent.type == SDL_EVENT_MOUSE_BUTTON_DOWN && inputEvent.key.key == SDL_BUTTON_RIGHT)){
-        // SDL_ShowCursor();
-		return;
+	if(inputEvent.type == SDL_EVENT_MOUSE_BUTTON_DOWN){
+        if(inputEvent.button.button == SDL_BUTTON_RIGHT){
+            mRMBisHeld = true;
+            SDL_HideCursor();
+        }
 	}
-    // else{
-    //     SDL_HideCursor();
-    // }
+    else if (inputEvent.type == SDL_EVENT_MOUSE_BUTTON_UP){
+        mRMBisHeld = false;
+        SDL_ShowCursor();
+        return;
+    }
 
 	bool moved = false;
 
