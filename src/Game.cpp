@@ -69,16 +69,16 @@ void Game::Run(){
 				isRunning = false;
 			}
 			else if(event.type == SDL_EVENT_MOUSE_MOTION || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_UP){
-				if(event.type == SDL_EVENT_MOUSE_BUTTON_DOWN){
-					mouseIsPressed = true;
-				}
-				if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
-					mouseIsPressed = false;
-				}
-				if(mouseIsPressed){
-					//Get mouse position
-					SDL_GetMouseState(&mouseX, &mouseY);
-				}
+				// if(event.type == SDL_EVENT_MOUSE_BUTTON_DOWN){
+				// 	mouseIsPressed = true;
+				// }
+				// if(event.type == SDL_EVENT_MOUSE_BUTTON_UP){
+				// 	mouseIsPressed = false;
+				// }
+				// if(mouseIsPressed){
+				// 	//Get mouse position
+				// 	SDL_GetMouseState(&mouseX, &mouseY);
+				// }
 			}
 			else if(event.type == SDL_EVENT_KEY_DOWN){
 				if(event.key.key == SDLK_SPACE){
