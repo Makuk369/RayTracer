@@ -13,8 +13,8 @@ class RTRenderer{
 
     private:
         glm::vec4 TraceRay(const Ray& ray);
-        float CalcRayHit(const Ray& ray); // returns t (hit distance)
-        uint32_t ConvertVec4ToARGB(const glm::vec4 colorVec);
+        glm::vec3 CalcRayHit(const Ray& ray);
+        uint32_t Vec4ToARGB(const glm::vec4 colorVec);
 
         SDL_Surface* mSurface = nullptr;
         const Camera mCamera;
