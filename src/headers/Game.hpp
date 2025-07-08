@@ -20,4 +20,7 @@ class Game{
 
         Camera mCamera;
         RTRenderer mRTRenderer;
+
+        uint32_t ConvertVec4ToARGB(const glm::vec4 colorVec);
+        glm::vec4 ray_color(const Ray& r);
 };

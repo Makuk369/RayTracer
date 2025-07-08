@@ -10,7 +10,7 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip, uint32_t screen
 	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip), mViewportWidth(screenWidth), mViewportHeight(screenHeight)
 {
 	mForwardDirection = glm::vec3(0, 0, -1);
-	mPosition = glm::vec3(0, 0, 1);
+	mPosition = glm::vec3(0, 0, 0);
 
 	RecalculateView();
 	RecalculateRayDirections();

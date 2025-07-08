@@ -37,35 +37,34 @@ void RTRenderer::Render(SDL_Surface* surface, const Camera& camera){
 glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 {
 	float radius = 0.5f;
+	glm::vec3 sphereOrigin{0.0f, 0.0f, -1.0f};
 
-	// (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
-	// where
-	// a = ray origin
-	// b = ray direction
-	// r = radius
-	// t = hit distance
-
-	glm::vec3 origin = ray.origin - glm::vec3{0.0f, 0.0f, 0.0f};
-
+	// Sphere formula (quadratic)
+	glm::vec3 oc = sphereOrigin - ray.origin;
 	float a = glm::dot(ray.direction, ray.direction);
-	float b = 2.0f * glm::dot(origin, ray.direction);
-	float c = glm::dot(origin, origin) - radius * radius;
+	float b = -2.0f * glm::dot(ray.direction, oc);
+	float c = glm::dot(oc, oc) - radius * radius;
 
 	// Quadratic forumula discriminant:
-	// b^2 - 4ac
 	float discriminant = b * b - 4.0f * a * c;
 	if (discriminant < 0.0f){ // ray missed
-		return glm::vec4(0, 0, 0, 1);
+		return glm::vec4(0.5, 0.8, 1, 1);
 	}
-	
-	// (-b +- sqrt(discriminant)) / 2a
-	// float t0 = (-b + glm::sqrt(discriminant)) / (2.0f * a);
+
+	// Quadratic formula
 	float closestT = (-b - glm::sqrt(discriminant)) / (2.0f * a);
 
-	glm::vec3 hitPoint = origin + ray.direction * closestT;
+	glm::vec3 hitPoint = ray.origin + closestT * ray.direction;
+	
+	glm::vec normal = glm::normalize(hitPoint - sphereOrigin);
+	return 0.5f * glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 1);
+
+	// return glm::vec4(1, 0, 0, 1);
+	/*
+	glm::vec3 hitPoint = oc + ray.direction * closestT;
 	glm::vec3 normal = glm::normalize(hitPoint);
 
-	glm::vec3 lightDir = glm::normalize(glm::vec3(1, 0, 0));
+	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, 1, 1));
 
 	float d = glm::max(glm::dot(normal, -lightDir), 0.0f); // == cos(angle)
 
@@ -73,6 +72,7 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 	glm::vec4 sphereColor(1.0f, 0.0f, 1.0f, 1.0f);
 	sphereColor *= d;
     return sphereColor;
+	*/
 }
 
 uint32_t RTRenderer::ConvertVec4ToARGB(const glm::vec4 colorVec){
