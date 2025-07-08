@@ -1,11 +1,40 @@
 #include "headers/Camera.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/quaternion.hpp"
-#define GLM_ENABLE_EXPERIMENTAL
-#include "glm/gtx/quaternion.hpp"
+// #include "glm/gtc/matrix_transform.hpp"
+// #include "glm/gtc/quaternion.hpp"
+// #define GLM_ENABLE_EXPERIMENTAL
+// #include "glm/gtx/quaternion.hpp"
 
-#include <SDL3/SDL_log.h>
+// #include <SDL3/SDL_log.h>
 
+Camera::Camera(SDL_Surface* surface)
+	:mSurfaceWidth(surface->w), mSurfaceHeight(surface->h)
+{
+	mViewportWidth = mViewportHeight * (float(surface->w)/surface->h);
+
+	mViewportU = glm::vec3{mViewportWidth, 0.0f, 0.0f};
+	mViewportV = glm::vec3{0.0f, -mViewportHeight, 0.0f};
+
+	mPixelDeltaU = mViewportU / (float)surface->w;
+	mPixelDeltaV = mViewportV / (float)surface->h;
+
+	mViewportUpperLeft = mPosition - glm::vec3(0, 0, mFocalLength) - mViewportU/2.0f - mViewportV/2.0f;
+	mPixel00Location = mViewportUpperLeft + 0.5f * (mPixelDeltaU + mPixelDeltaV);
+
+	RecalculateRayDirections();
+}
+
+void Camera::RecalculateRayDirections(){
+	mRayDirections.resize(mSurfaceWidth * mSurfaceHeight);
+
+	for (int y = 0; y < mSurfaceHeight; y++){
+		for (int x = 0; x < mSurfaceWidth; x++){
+			glm::vec3 pixelCenter = mPixel00Location + ((float)x * mPixelDeltaU) + ((float)y * mPixelDeltaV);
+			mRayDirections[x + y * mSurfaceWidth] = pixelCenter - mPosition;
+		}
+	}
+}
+
+/*
 Camera::Camera(float verticalFOV, float nearClip, float farClip, uint32_t screenWidth, uint32_t screenHeight)
 	: mVerticalFOV(verticalFOV), mNearClip(nearClip), mFarClip(farClip), mViewportWidth(screenWidth), mViewportHeight(screenHeight)
 {
@@ -118,3 +147,4 @@ void Camera::RecalculateRayDirections()
 		}
 	}
 }
+*/

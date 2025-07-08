@@ -1,8 +1,42 @@
 #pragma once
 #include "glm/glm.hpp"
-#include <SDL3/SDL_events.h>
+#include <SDL3/SDL.h>
 #include <vector>
 
+class Camera
+{
+    public:
+        Camera(SDL_Surface* surface);
+
+        const glm::vec3& GetPosition() const { return mPosition; };
+        const std::vector<glm::vec3>& GetRayDirections() const { return mRayDirections; }
+
+    private:
+        void RecalculateRayDirections();
+
+        int mSurfaceWidth = 0;
+        int mSurfaceHeight = 0;
+
+        float mFocalLength = 1.0f;
+        float mViewportHeight = 2.0f;
+        float mViewportWidth = 0.0f;
+
+        glm::vec3 mPosition{0.0f, 0.0f, 0.0f};
+
+        glm::vec3 mViewportU{0.0f};
+        glm::vec3 mViewportV{0.0f};
+
+        glm::vec3 mPixelDeltaU{0.0f};
+        glm::vec3 mPixelDeltaV{0.0f};
+
+        glm::vec3 mViewportUpperLeft{0.0f};
+        glm::vec3 mPixel00Location{0.0f};
+
+        std::vector<glm::vec3> mRayDirections;
+};
+
+
+/*
 class Camera{
     public:
         Camera(float verticalFOV, float nearClip, float farClip, uint32_t screenWidth, uint32_t screenHeight);
@@ -48,3 +82,4 @@ class Camera{
 
         uint32_t mViewportWidth = 0, mViewportHeight = 0;
 };
+*/

@@ -6,11 +6,14 @@
 
 class RTRenderer{
     public:
-        RTRenderer() = default;
+        RTRenderer(SDL_Surface* surface, const Camera& camera);
 
-        void Render(SDL_Surface* surface, const Camera& camera);
+        void Render();
 
     private:
         glm::vec4 TraceRay(const Ray& ray);
         uint32_t ConvertVec4ToARGB(const glm::vec4 colorVec);
+
+        SDL_Surface* mSurface = nullptr;
+        const Camera mCamera;
 };
