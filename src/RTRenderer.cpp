@@ -1,5 +1,8 @@
 #include "headers/RTRenderer.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/norm.hpp"
+
 #define NO_HIT_POINT glm::vec3{FLT_MAX}
 
 RTRenderer::RTRenderer(SDL_Surface* surface, const Camera& camera)
@@ -32,7 +35,7 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 {
 	glm::vec3 hitPoint = CalcRayHit(ray);
 	
-	if(hitPoint != NO_HIT_POINT){
+	if(hitPoint != NO_HIT_POINT){ // hitted a sphere
 		glm::vec normal = glm::normalize(hitPoint - mSphere.position);
 		return 0.5f * glm::vec4{normal.x + 1, normal.y + 1, normal.z + 1 , 1.0f};
 	}
@@ -40,29 +43,25 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray)
 	glm::vec3 normalizedRayDir = glm::normalize(ray.direction);
 	float a = 0.5f * (normalizedRayDir.y + 1.0f);
 	return (1.0f-a) * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) + a * glm::vec4(0.5f, 0.7f, 1.0f, 1.0f);
-
-	
-	// return 0.5f * glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 1);
-
-	// return glm::vec4(1, 0, 0, 1);
 }
 
 // returns hit point, {0,0,0} if no hit 
 glm::vec3 RTRenderer::CalcRayHit(const Ray& ray)
 {
-	// Sphere formula (quadratic)
+	// Sphere formula (quadratic - modified)
 	glm::vec3 oc = mSphere.position - ray.origin;
-	float a = glm::dot(ray.direction, ray.direction);
-	float b = -2.0f * glm::dot(ray.direction, oc);
-	float c = glm::dot(oc, oc) - mSphere.radius * mSphere.radius;
+	float a = glm::length2(ray.direction);
+	float h = glm::dot(ray.direction, oc);
+	float c = glm::length2(oc) - mSphere.radius * mSphere.radius;
 
 	// Quadratic forumula discriminant
-	float discriminant = b * b - 4.0f * a * c;
+	// float discriminant = b * b - 4.0f * a * c;
+	float discriminant = h * h - a * c;
 	if (discriminant < 0.0f) { // ray missed
         return NO_HIT_POINT;
     } else {
 		// Quadratic forumula
-		float closestT = (-b - std::sqrt(discriminant)) / (2.0f * a);
+		float closestT = (h - glm::sqrt(discriminant)) / a;
         return ray.origin + (closestT * ray.direction);
     }
 }
