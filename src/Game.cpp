@@ -53,7 +53,7 @@ void Game::Run(){
 
 	Scene scene1;
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.0f}, 0.5f));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 100.5f, -1.0f}, 100.0f));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{4.0f, 1.0f, -4.0f}, 1.0f));
 
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){

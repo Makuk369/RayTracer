@@ -2,13 +2,14 @@
 #include "glm/glm.hpp"
 #include "Ray.hpp"
 #include "HitRecord.hpp"
+#include "Interval.hpp"
 
 class Hittable
 {
     public:
         virtual ~Hittable() = default;
 
-        virtual bool Hit(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const = 0;
+        virtual bool Hit(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const = 0;
 
     private:
 };

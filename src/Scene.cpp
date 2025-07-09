@@ -1,13 +1,13 @@
 #include "headers/Scene.hpp"
 
-bool Scene::HitObjects(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const
+bool Scene::HitObjects(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const
 {
     HitRecord tempHitRec;
     bool hitAnything = false;
-    float closestTSoFar = rayTmax;
+    float closestTSoFar = rayT.max;
 
     for (const std::shared_ptr<Hittable>& object : mObjects){
-        if(object->Hit(ray, rayTmin, closestTSoFar, tempHitRec)){
+        if(object->Hit(ray, Interval(rayT.min, closestTSoFar), tempHitRec)){
             hitAnything = true;
             closestTSoFar = tempHitRec.t;
             hitRec = tempHitRec;

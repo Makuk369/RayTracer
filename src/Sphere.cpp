@@ -6,7 +6,7 @@ Sphere::Sphere(glm::vec3 position, float radius)
     : mPosition(position), mRadius(glm::max(0.0f, radius))
 {}
 
-bool Sphere::Hit(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const
+bool Sphere::Hit(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const
 {
     // Sphere formula (quadratic - modified)
 	glm::vec3 oc = mPosition - ray.origin;
@@ -22,9 +22,9 @@ bool Sphere::Hit(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec
     float sqrtDiscriminant = glm::sqrt(discriminant);
     
     float root = (h - sqrtDiscriminant) / a; // closestT
-    if(root <= rayTmin || rayTmax <= root){ // is outside of bounds
+    if(!rayT.Surrounds(root)){ // is outside of bounds
         root = (h + sqrtDiscriminant) / a;
-        if(root <= rayTmin || rayTmax <= root){
+        if(!rayT.Surrounds(root)){
             return false;
         }
     }

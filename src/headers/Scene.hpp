@@ -9,7 +9,7 @@ class Scene
         void Clear() { mObjects.clear(); };
         void Add(std::shared_ptr<Hittable> object) { mObjects.push_back(object); };
 
-        bool HitObjects(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const;
+        bool HitObjects(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const;
 
     private:
         std::vector<std::shared_ptr<Hittable>> mObjects;

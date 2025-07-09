@@ -12,5 +12,5 @@ namespace RayTracerSetings{
     inline const uint16_t WINDOW_WIDTH = 960;
     inline const uint16_t WINDOW_HEIGHT = WINDOW_WIDTH / ASPECT_RATIO;
 
-    inline const float MAX_RAY_HIT_DISTANCE = std::numeric_limits<float>::infinity();
+    inline const float INFINITE_F = std::numeric_limits<float>::infinity();
 }

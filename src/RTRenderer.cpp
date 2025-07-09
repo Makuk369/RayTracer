@@ -3,8 +3,6 @@
 #include "glm/gtx/norm.hpp"
 #include "headers/GameSettings.hpp"
 
-#define NO_HIT_POINT glm::vec3{FLT_MAX}
-
 RTRenderer::RTRenderer(SDL_Surface* surface, const Camera& camera)
 	: mSurface(surface), mCamera(camera)
 {}
@@ -35,7 +33,7 @@ glm::vec4 RTRenderer::TraceRay(const Ray& ray, const Scene& scene)
 {
 	HitRecord hitRecord;
 
-	if(scene.HitObjects(ray, 0, RayTracerSetings::MAX_RAY_HIT_DISTANCE, hitRecord)){
+	if(scene.HitObjects(ray, Interval(0, RayTracerSetings::INFINITE_F), hitRecord)){
 		return 0.5f * glm::vec4{hitRecord.normal.x + 1, hitRecord.normal.y + 1, hitRecord.normal.z + 1 , 1.0f};
 	}
 	
