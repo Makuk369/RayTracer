@@ -1,7 +1,7 @@
 #include "headers/RTRenderer.hpp"
-
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/norm.hpp"
+#include "headers/GameSettings.hpp"
 
 #define NO_HIT_POINT glm::vec3{FLT_MAX}
 
@@ -9,7 +9,7 @@ RTRenderer::RTRenderer(SDL_Surface* surface, const Camera& camera)
 	: mSurface(surface), mCamera(camera)
 {}
 
-void RTRenderer::Render(){
+void RTRenderer::Render(const Scene& scene){
 	SDL_LockSurface(mSurface);
 	SDL_PixelFormat pixelFormat = mSurface->format;
 	const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(pixelFormat);
@@ -22,7 +22,7 @@ void RTRenderer::Render(){
 			ray.origin = mCamera.GetPosition();
 			ray.direction = mCamera.GetRayDirections()[x + y * mSurface->w];
 
-			glm::vec4 color = TraceRay(ray);
+			glm::vec4 color = TraceRay(ray, scene);
 			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * pixelFormatDetails->bytes_per_pixel);
 			*targetPixel = Vec4ToARGB(color);
 		}
@@ -31,39 +31,17 @@ void RTRenderer::Render(){
 }
 
 // returns color of pixel (format = ARGB 0xff000000)
-glm::vec4 RTRenderer::TraceRay(const Ray& ray)
+glm::vec4 RTRenderer::TraceRay(const Ray& ray, const Scene& scene)
 {
-	glm::vec3 hitPoint = CalcRayHit(ray);
-	
-	if(hitPoint != NO_HIT_POINT){ // hitted a sphere
-		glm::vec normal = glm::normalize(hitPoint - mSphere.position);
-		return 0.5f * glm::vec4{normal.x + 1, normal.y + 1, normal.z + 1 , 1.0f};
+	HitRecord hitRecord;
+
+	if(scene.HitObjects(ray, 0, RayTracerSetings::MAX_RAY_HIT_DISTANCE, hitRecord)){
+		return 0.5f * glm::vec4{hitRecord.normal.x + 1, hitRecord.normal.y + 1, hitRecord.normal.z + 1 , 1.0f};
 	}
 	
 	glm::vec3 normalizedRayDir = glm::normalize(ray.direction);
 	float a = 0.5f * (normalizedRayDir.y + 1.0f);
 	return (1.0f-a) * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f) + a * glm::vec4(0.5f, 0.7f, 1.0f, 1.0f);
-}
-
-// returns hit point, {0,0,0} if no hit 
-glm::vec3 RTRenderer::CalcRayHit(const Ray& ray)
-{
-	// Sphere formula (quadratic - modified)
-	glm::vec3 oc = mSphere.position - ray.origin;
-	float a = glm::length2(ray.direction);
-	float h = glm::dot(ray.direction, oc);
-	float c = glm::length2(oc) - mSphere.radius * mSphere.radius;
-
-	// Quadratic forumula discriminant
-	// float discriminant = b * b - 4.0f * a * c;
-	float discriminant = h * h - a * c;
-	if (discriminant < 0.0f) { // ray missed
-        return NO_HIT_POINT;
-    } else {
-		// Quadratic forumula
-		float closestT = (h - glm::sqrt(discriminant)) / a;
-        return ray.origin + (closestT * ray.direction);
-    }
 }
 
 uint32_t RTRenderer::Vec4ToARGB(const glm::vec4 colorVec)

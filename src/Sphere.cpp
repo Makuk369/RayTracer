@@ -1,0 +1,38 @@
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/norm.hpp"
+#include "headers/Sphere.hpp"
+
+Sphere::Sphere(glm::vec3 position, float radius)
+    : mPosition(position), mRadius(glm::max(0.0f, radius))
+{}
+
+bool Sphere::Hit(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const
+{
+    // Sphere formula (quadratic - modified)
+	glm::vec3 oc = mPosition - ray.origin;
+	float a = glm::length2(ray.direction);
+	float h = glm::dot(ray.direction, oc);
+	float c = glm::length2(oc) - mRadius * mRadius;
+
+	// Quadratic forumula discriminant
+	float discriminant = h * h - a * c;
+	if(discriminant < 0.0f) { // ray missed
+        return false;
+    }
+    float sqrtDiscriminant = glm::sqrt(discriminant);
+    
+    float root = (h - sqrtDiscriminant) / a; // closestT
+    if(root <= rayTmin || rayTmax <= root){ // is outside of bounds
+        root = (h + sqrtDiscriminant) / a;
+        if(root <= rayTmin || rayTmax <= root){
+            return false;
+        }
+    }
+
+    hitRec.t = root;
+    hitRec.position = ray.origin + (root * ray.direction); // hit point
+    glm::vec3 outwardNormal = (hitRec.position - mPosition) / mRadius;
+    hitRec.SetFaceNormal(ray, outwardNormal);
+
+    return true;
+}

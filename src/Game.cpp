@@ -1,6 +1,7 @@
 #include "headers/Game.hpp"
 #include "headers/GameSettings.hpp"
 #include "headers/Timer.hpp"
+#include "headers/Sphere.hpp"
 
 Game::Game()
 {
@@ -50,6 +51,10 @@ void Game::Run(){
 	Camera camera(mWindowSurface);
 	RTRenderer renderer(mWindowSurface, camera);
 
+	Scene scene1;
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.0f}, 0.5f));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 100.5f, -1.0f}, 100.0f));
+
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){
 		deltaTime = timer.getDeltaTime();
@@ -67,7 +72,7 @@ void Game::Run(){
 			updateDelay = 1.f/RayTracerSetings::MAX_FPS;
 			frameCount++;
 
-			renderer.Render();
+			renderer.Render(scene1);
 			
 			//Update screen
 			SDL_UpdateWindowSurface(mWindow);

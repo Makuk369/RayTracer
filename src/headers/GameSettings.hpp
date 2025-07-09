@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 
 namespace RayTracerSetings{
 
@@ -10,4 +11,6 @@ namespace RayTracerSetings{
     // commonly: 320, 640, 960, 1280, 1920
     inline const uint16_t WINDOW_WIDTH = 960;
     inline const uint16_t WINDOW_HEIGHT = WINDOW_WIDTH / ASPECT_RATIO;
+
+    inline const float MAX_RAY_HIT_DISTANCE = std::numeric_limits<float>::infinity();
 }

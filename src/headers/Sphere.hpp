@@ -1,8 +1,16 @@
 #pragma once
 #include "glm/glm.hpp"
+#include "Hittable.hpp"
 
-struct Sphere
+class Sphere : public Hittable
 {
-    glm::vec3 position;
-    float radius;
+    public:
+        Sphere(glm::vec3 position, float radius);
+
+        bool Hit(const Ray& ray, float rayTmin, float rayTmax, HitRecord& hitRec) const override;
+
+    private:
+        glm::vec3 mPosition;
+        float mRadius;
 };
+
