@@ -2,7 +2,7 @@
 #include "headers/Utils.hpp"
 #include "headers/Settings.hpp"
 
-Camera::Camera(SDL_Surface* surface, bool antiAliasing)
+Camera::Camera(SDL_Surface* surface)
 	:mSurfaceWidth(surface->w), mSurfaceHeight(surface->h)
 {
 	mViewportWidth = mViewportHeight * (float(surface->w)/surface->h);

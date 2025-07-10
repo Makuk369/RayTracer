@@ -6,7 +6,7 @@
 class Camera
 {
     public:
-        Camera(SDL_Surface* surface, bool antiAliasing = false);
+        Camera(SDL_Surface* surface);
 
         const glm::vec3& GetPosition() const { return mPosition; };
         const std::vector<glm::vec3>& GetRayDirections() const { return mRayDirections; }

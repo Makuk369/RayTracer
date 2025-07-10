@@ -13,8 +13,10 @@ class RTRenderer{
         void RenderAntiAliased(const Scene& scene);
 
     private:
-        glm::vec4 TraceRay(const Ray& ray, const Scene& scene);
+        glm::vec4 TraceRay(Ray& ray, const Scene& scene);
 
         SDL_Surface* mSurface = nullptr;
         const Camera mCamera;
+
+        int mMaxBounces = 5;
 };

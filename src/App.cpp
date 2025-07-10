@@ -39,9 +39,9 @@ void App::Run(){
 	bool isRunning = true;
 
 	SDL_Event event;
-	float mouseX = 0.f;
-	float mouseY = 0.f;
-	bool mouseIsPressed = false;
+	// float mouseX = 0.f;
+	// float mouseY = 0.f;
+	// bool mouseIsPressed = false;
 
 	Timer timer;
 	timer.Start();
@@ -50,12 +50,13 @@ void App::Run(){
 	float fpsTimer = 1;
 	float updateDelay = 1.f/RTSetings::MAX_FPS;
 
-	Camera camera(mWindowSurface, RTSetings::USE_ANTI_ALIASING);
+	Camera camera(mWindowSurface);
 	RTRenderer renderer(mWindowSurface, camera);
 
 	Scene scene1;
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.0f}, 0.5f));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{4.0f, 1.0f, -4.0f}, 1.0f));
+	// scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 10.5f, -1.0f}, 10.0f));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, -100.5f, -1.0f}, 100.0f));
 
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){
