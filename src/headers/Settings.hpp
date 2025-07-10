@@ -7,7 +7,6 @@ namespace RTSetings{
     inline const uint16_t MAX_FPS = 600;
 
     // performance and RAM heavy if used
-    // TODO: kinda broken rn
     inline const bool USE_ANTI_ALIASING = false;
     // used for anti-aliasing
     inline const int SAMPLES_PER_PIXEL = 10;
