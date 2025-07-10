@@ -1,10 +1,10 @@
 #include <SDL3/SDL_main.h>
-#include "headers/Game.hpp"
+#include "headers/App.hpp"
 
 int main(int argc, char* args[])
 {
-	Game game;
-	game.Run();
+	App app;
+	app.Run();
 
 	return 0;
 }

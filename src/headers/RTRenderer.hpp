@@ -10,10 +10,10 @@ class RTRenderer{
         RTRenderer(SDL_Surface* surface, const Camera& camera);
 
         void Render(const Scene& scene);
+        void RenderAntiAliased(const Scene& scene);
 
     private:
         glm::vec4 TraceRay(const Ray& ray, const Scene& scene);
-        uint32_t Vec4ToARGB(const glm::vec4 colorVec);
 
         SDL_Surface* mSurface = nullptr;
         const Camera mCamera;

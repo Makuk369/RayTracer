@@ -1,5 +1,5 @@
 #pragma once
-#include "GameSettings.hpp"
+#include "Utils.hpp"
 
 class Interval
 {
@@ -7,7 +7,7 @@ class Interval
         float min;
         float max;
 
-        Interval() : min(+RayTracerSetings::INFINITE_F), max(-RayTracerSetings::INFINITE_F) {} // Default interval is empty
+        Interval() : min(+RTUtilVars::INFINITE_F), max(-RTUtilVars::INFINITE_F) {} // Default interval is empty
         Interval(float min, float max) : min(min), max(max) {}
 
         float Size() const { return max - min; }

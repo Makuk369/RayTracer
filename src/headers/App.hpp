@@ -1,12 +1,10 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include "Camera.hpp"
-#include "RTRenderer.hpp"
 
-class Game{
+class App{
     public:
-        Game();
-        ~Game();
+        App();
+        ~App();
         
         void Run();
         

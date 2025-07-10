@@ -6,13 +6,16 @@
 class Camera
 {
     public:
-        Camera(SDL_Surface* surface);
+        Camera(SDL_Surface* surface, bool antiAliasing = false);
 
         const glm::vec3& GetPosition() const { return mPosition; };
         const std::vector<glm::vec3>& GetRayDirections() const { return mRayDirections; }
+        const glm::vec3& GetViewportU() const { return mViewportU; };
+        const glm::vec3& GetViewportV() const { return mViewportV; };
 
     private:
         void RecalculateRayDirections();
+        void RecalculateRayDirectionsAntiAliased();
 
         int mSurfaceWidth = 0;
         int mSurfaceHeight = 0;

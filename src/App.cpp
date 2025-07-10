@@ -1,16 +1,18 @@
-#include "headers/Game.hpp"
-#include "headers/GameSettings.hpp"
+#include "headers/App.hpp"
+#include "headers/Settings.hpp"
+#include "headers/Camera.hpp"
+#include "headers/RTRenderer.hpp"
 #include "headers/Timer.hpp"
 #include "headers/Sphere.hpp"
 
-Game::Game()
+App::App()
 {
 	if(!SDL_Init(SDL_INIT_VIDEO)){
 		SDL_Log( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
 		return;
 	}
 
-	if((mWindow = SDL_CreateWindow("Ray Tracer", RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT, 0)) == nullptr){
+	if((mWindow = SDL_CreateWindow("Ray Tracer", RTSetings::WINDOW_WIDTH, RTSetings::WINDOW_HEIGHT, 0)) == nullptr){
 		SDL_Log( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
 		return;
 	}
@@ -19,21 +21,21 @@ Game::Game()
 		SDL_Log("mWindowSurface is NULL! SDL Error: %s\n", SDL_GetError());
 	}
 
-	SDL_Log("Window size = %ux%u\n", RayTracerSetings::WINDOW_WIDTH, RayTracerSetings::WINDOW_HEIGHT);
-	SDL_Log("Game - init!\n");
+	SDL_Log("Window size = %ux%u\n", RTSetings::WINDOW_WIDTH, RTSetings::WINDOW_HEIGHT);
+	SDL_Log("App - init!\n");
 }
 
-Game::~Game(){
+App::~App(){
 	SDL_DestroyWindow(mWindow);
 	mWindow = nullptr;
 
 	//Quit SDL subsystems
 	SDL_Quit();
-	SDL_Log("Game - quit!\n");
+	SDL_Log("App - quit!\n");
 }
 
-void Game::Run(){
-	SDL_Log("Game - running!\n");
+void App::Run(){
+	SDL_Log("App - running!\n");
 	bool isRunning = true;
 
 	SDL_Event event;
@@ -46,9 +48,9 @@ void Game::Run(){
 	float deltaTime = 0;
 	unsigned int frameCount = 0;
 	float fpsTimer = 1;
-	float updateDelay = 1.f/RayTracerSetings::MAX_FPS;
+	float updateDelay = 1.f/RTSetings::MAX_FPS;
 
-	Camera camera(mWindowSurface);
+	Camera camera(mWindowSurface, RTSetings::USE_ANTI_ALIASING);
 	RTRenderer renderer(mWindowSurface, camera);
 
 	Scene scene1;
@@ -69,16 +71,20 @@ void Game::Run(){
 
 		updateDelay -= deltaTime;
 		if(updateDelay <= 0.f){
-			updateDelay = 1.f/RayTracerSetings::MAX_FPS;
+			updateDelay = 1.f/RTSetings::MAX_FPS;
 			frameCount++;
 
-			renderer.Render(scene1);
+			if(RTSetings::USE_ANTI_ALIASING){
+				renderer.RenderAntiAliased(scene1);
+			}else{
+				renderer.Render(scene1);
+			}
 			
 			//Update screen
 			SDL_UpdateWindowSurface(mWindow);
 		}
 
-		if(RayTracerSetings::SHOW_FPS){
+		if(RTSetings::SHOW_FPS){
 			fpsTimer -= deltaTime;
 			if(fpsTimer <= 0.f){
 				fpsTimer = 1.f;
