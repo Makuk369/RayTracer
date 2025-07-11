@@ -4,7 +4,7 @@
 namespace RTSetings{
 
     inline const bool SHOW_FPS = true;
-    inline const uint16_t MAX_FPS = 600;
+    inline const uint16_t MAX_FPS = 60;
 
     // performance and RAM heavy if used
     inline const bool USE_ANTI_ALIASING = false;

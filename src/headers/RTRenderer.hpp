@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <SDL3/SDL.h>
 #include "glm/glm.hpp"
 #include "Camera.hpp"
@@ -13,10 +14,17 @@ class RTRenderer{
         void RenderAntiAliased(const Scene& scene);
 
     private:
-        glm::vec4 TraceRay(Ray& ray, const Scene& scene);
+        glm::vec4 PerPixel(Ray& ray);
 
         SDL_Surface* mSurface = nullptr;
+        const SDL_PixelFormatDetails *mPixelFormatDetails = nullptr;
+
         const Camera mCamera;
+        const Scene* mCurrentScene = nullptr;
 
         int mMaxBounces = 5;
+
+        std::vector<int> mHorizontalIter;
+        std::vector<int> mVerticalIter;
+
 };
