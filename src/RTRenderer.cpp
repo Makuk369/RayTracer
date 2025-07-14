@@ -95,21 +95,19 @@ glm::vec4 RTRenderer::PerPixel(Ray& ray)
 	glm::vec3 colorContribution{1.0f};
 
 	for (size_t bounce = 0; bounce < mMaxBounces; bounce++){
-		if(!mCurrentScene->HitObjects(ray, Interval(0, RTUtilVars::INFINITE_F), hitRecord)){  // didn't hit (hit sky) == no more bounces
+		if(!mCurrentScene->HitObjects(ray, Interval(0.0f, RTUtilVars::INFINITE_F), hitRecord)){  // didn't hit (hit sky) == no more bounces
 			// return 0.5f * glm::vec4{hitRecord.normal.x + 1, hitRecord.normal.y + 1, hitRecord.normal.z + 1 , 1.0f};
 			// glm::vec3 direction = RTUtils::RandomOnHemisphere(randSeed, hitRecord.normal);
 			// return 0.5f * PerPixel(Ray{hitRecord.position, direction}, scene);
 			// return 0.5f * PerPixel(Ray{hitRecord.position + (hitRecord.normal * 0.001f), direction}, scene);
 
-			color = glm::vec3{0.6f, 0.7f, 0.9f} * colorContribution; // sky color = glm::vec3{0.6f, 0.7f, 0.9f}
+			color = glm::vec3{0.7f, 0.8f, 1.0f} * colorContribution; // sky color = glm::vec3{0.6f, 0.7f, 0.9f}
 			break;
 		}
-		colorContribution *= glm::vec3{0.8f, 0.1f, 0.1f};
+		colorContribution *= glm::vec3{0.5f, 0.5f, 0.5f};
 
 		ray.origin = hitRecord.position + hitRecord.normal * 0.0001f;
-		ray.direction = RTUtils::RandomOnHemisphere(randSeed, hitRecord.normal);
-
-		
+		ray.direction = hitRecord.normal + glm::normalize(RTUtils::RandomVec3(randSeed));
 	}
 	return glm::vec4{color, 1.0f};
 }

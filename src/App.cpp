@@ -46,9 +46,12 @@ void App::Run(){
 	Timer timer;
 	timer.Start();
 	float deltaTime = 0;
-	unsigned int frameCount = 0;
-	float fpsTimer = 1;
+	uint32_t frameCount = 0;
+	float fpsTimer = 1.0f;
 	float updateDelay = 1.f/RTSetings::MAX_FPS;
+
+	Timer renderTimer;
+	uint64_t renderTimeTotal = 0; // ms
 
 	Camera camera(mWindowSurface);
 	RTRenderer renderer(mWindowSurface, camera);
@@ -75,11 +78,13 @@ void App::Run(){
 			updateDelay = 1.f/RTSetings::MAX_FPS;
 			frameCount++;
 
+			renderTimer.Start();
 			if(RTSetings::USE_ANTI_ALIASING){
 				renderer.RenderAntiAliased(scene1);
 			}else{
 				renderer.Render(scene1);
 			}
+			renderTimeTotal += renderTimer.getTicks();
 			
 			//Update screen
 			SDL_UpdateWindowSurface(mWindow);
@@ -89,8 +94,9 @@ void App::Run(){
 			fpsTimer -= deltaTime;
 			if(fpsTimer <= 0.f){
 				fpsTimer = 1.f;
-				SDL_Log("FPS = %u; %.2fms per frame\n", frameCount, (1.f/frameCount)*1000);
+				SDL_Log("FPS = %u; %.2fms per render\n", frameCount, (float)renderTimeTotal / (float)frameCount);
 				frameCount = 0;
+				renderTimeTotal = 0;
 			}
 		}
 	}
