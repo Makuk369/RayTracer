@@ -1,6 +1,6 @@
 #include "headers/RTRenderer.hpp"
 #include <execution>
-#include <iostream>
+#include <algorithm>
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/norm.hpp"
 #include "headers/Settings.hpp"
@@ -23,6 +23,8 @@ RTRenderer::RTRenderer(SDL_Surface* surface, const Camera& camera)
 	{
 		mVerticalIter[i] = i;
 	}
+
+	mAccumulationData.resize(mSurface->w * mSurface->h, glm::vec4{0.0f});
 }
 
 void RTRenderer::Render(const Scene& scene){
@@ -39,13 +41,18 @@ void RTRenderer::Render(const Scene& scene){
 			ray.origin = mCamera.GetPosition();
 			ray.direction = mCamera.GetRayDirections()[x + y * mSurface->w];
 
-			glm::vec4 color{0.0f};
+			glm::vec4 color = PerPixel(ray, mMaxBounces);
+			mAccumulationData[x + y * mSurface->w] += color;
 
-			color += PerPixel(ray, mMaxBounces);
+			glm::vec4 accumulatedColor = mAccumulationData[x + y * mSurface->w];
+			accumulatedColor /= (float)mFrameIndex;
+
 			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
-			*targetPixel = RTUtils::Vec4ToARGB(color);
+			*targetPixel = RTUtils::Vec4ToARGB(accumulatedColor);
 		}
 	});
+
+	mFrameIndex++;
 
 	SDL_UnlockSurface(mSurface);
 }
@@ -143,4 +150,10 @@ glm::vec4 RTRenderer::PerPixel(Ray& ray, int bounceCount)
 	}
 
 	return glm::vec4{0.7f, 0.8f, 1.0f, 1.0f}; // sky
+}
+
+void RTRenderer::Reset()
+{
+	std::fill(mAccumulationData.begin(), mAccumulationData.end(), glm::vec4{0.0f});
+	mFrameIndex = 1;
 }

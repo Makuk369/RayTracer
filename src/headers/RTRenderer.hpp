@@ -13,6 +13,8 @@ class RTRenderer{
         void Render(const Scene& scene);
         void RenderAntiAliased(const Scene& scene);
 
+        void Reset();
+
     private:
         glm::vec4 PerPixel(Ray& ray, int bounceCount);
 
@@ -26,5 +28,9 @@ class RTRenderer{
 
         std::vector<int> mHorizontalIter;
         std::vector<int> mVerticalIter;
+
+        // glm::vec4* mAccumulationData = nullptr;
+        std::vector<glm::vec4> mAccumulationData;
+        uint32_t mFrameIndex = 1;
 
 };

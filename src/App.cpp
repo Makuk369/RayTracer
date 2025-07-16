@@ -70,12 +70,22 @@ void App::Run(){
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, -1.0f}, 0.5f, rightMat));
 
 	// ---------- MAIN GAME LOOP ----------
-	while(isRunning){
+	while(isRunning)
+	{
 		deltaTime = timer.getDeltaTime();
 
-		while(SDL_PollEvent(&event) != 0){
-			if(event.type == SDL_EVENT_QUIT){
+		while(SDL_PollEvent(&event) != 0)
+		{
+			if(event.type == SDL_EVENT_QUIT)
+			{
 				isRunning = false;
+			}
+			else if(event.type == SDL_EVENT_KEY_DOWN)
+			{
+				if(event.key.key == SDLK_R)
+				{
+					renderer.Reset();
+				}
 			}
 
 			// mCamera.OnUpdate(event, deltaTime);
