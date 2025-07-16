@@ -1,6 +1,9 @@
 #pragma once
+#include <memory>
 #include "glm/glm.hpp"
 #include "Ray.hpp"
+
+class Material;
 
 class HitRecord
 {
@@ -13,5 +16,6 @@ class HitRecord
         glm::vec3 normal{0.0f};
         bool isFrontFace = false;
         float t = 0.0f;
+        std::shared_ptr<Material> mat;
     private: 
 };

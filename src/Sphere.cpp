@@ -2,8 +2,8 @@
 #include "glm/gtx/norm.hpp"
 #include "headers/Sphere.hpp"
 
-Sphere::Sphere(glm::vec3 position, float radius)
-    : mPosition(position), mRadius(glm::max(0.0f, radius))
+Sphere::Sphere(glm::vec3 position, float radius, std::shared_ptr<Material> mat)
+    : mPosition(position), mRadius(glm::max(0.0f, radius)), mMat(mat)
 {}
 
 bool Sphere::Hit(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const
@@ -33,6 +33,7 @@ bool Sphere::Hit(const Ray& ray, const Interval& rayT, HitRecord& hitRec) const
     hitRec.position = ray.origin + (root * ray.direction); // hit point
     glm::vec3 outwardNormal = (hitRec.position - mPosition) / mRadius;
     hitRec.SetFaceNormal(ray, outwardNormal);
+    hitRec.mat = mMat;
 
     return true;
 }

@@ -1,5 +1,6 @@
 #include "headers/App.hpp"
 #include "headers/Settings.hpp"
+#include "headers/Material.hpp"
 #include "headers/Camera.hpp"
 #include "headers/RTRenderer.hpp"
 #include "headers/Timer.hpp"
@@ -56,10 +57,17 @@ void App::Run(){
 	Camera camera(mWindowSurface);
 	RTRenderer renderer(mWindowSurface, camera);
 
+	// Materials
+	std::shared_ptr<Material> groundMat = std::make_shared<Lambertian>(glm::vec4{0.8f, 0.8f, 0.0f, 1.0f});
+	std::shared_ptr<Material> blueMat = std::make_shared<Lambertian>(glm::vec4{0.1f, 0.2f, 0.5f, 1.0f});
+	std::shared_ptr<Material> leftMat = std::make_shared<Metal>(glm::vec4{0.8f, 0.8f, 0.8f, 1.0f}, 0.3f);
+	std::shared_ptr<Material> rightMat = std::make_shared<Metal>(glm::vec4{0.8f, 0.6f, 0.2f, 1.0f}, 1.0f);
+
 	Scene scene1;
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.0f}, 0.5f));
-	// scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 2.5f, -1.0f}, 2.0f));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, -100.5f, -1.0f}, 100.0f));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, -100.5f, -1.0f}, 100.0f, groundMat));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.2f}, 0.5f, blueMat));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{-1.0f, 0.0f, -1.0f}, 0.5f, leftMat));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, -1.0f}, 0.5f, rightMat));
 
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning){

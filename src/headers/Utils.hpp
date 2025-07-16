@@ -41,10 +41,27 @@ namespace RTUtils
         return glm::vec3{SDL_randf() - 0.5f, SDL_randf() - 0.5f, 0.0f};
     }
 
-    // Returns random vec3, x,y,z are in range [-1,1]
+    // Returns random vec3, x,y,z are in range [-1,1], using PCG
     inline glm::vec3 RandomVec3(uint32_t& seed)
     {
         return glm::vec3{RandomFloat(seed) * 2.0f - 1.0f, RandomFloat(seed) * 2.0f - 1.0f, RandomFloat(seed) * 2.0f - 1.0f};
+    }
+    // Returns random vec3, x,y,z are in range [-1,1], using SDL_randf
+    inline glm::vec3 RandomVec3()
+    {
+        return glm::vec3{SDL_randf() * 2.0f - 1.0f, SDL_randf() * 2.0f - 1.0f, SDL_randf() * 2.0f - 1.0f};
+    }
+
+    inline glm::vec3 RandomUnitVec3()
+    {
+        while(true)
+        {
+            glm::vec3 p = RandomVec3();
+            float lensq = glm::length2(p);
+            if(1e-160 < lensq && lensq <= 1){
+                return p / glm::sqrt(lensq);
+            }
+        }
     }
 
     // Returned vec3 is normalized
@@ -56,6 +73,12 @@ namespace RTUtils
         }else{
             return -v;
         }
+    }
+
+    inline bool isNearZeroVec(glm::vec3 vec)
+    {
+        float s = 1e-8f;
+        return (glm::abs(vec.x) < s) && (glm::abs(vec.y) < s) && (glm::abs(vec.z) < s);
     }
     
 } // namespace RTUtils

@@ -14,7 +14,7 @@ class RTRenderer{
         void RenderAntiAliased(const Scene& scene);
 
     private:
-        glm::vec4 PerPixel(Ray& ray);
+        glm::vec4 PerPixel(Ray& ray, int bounceCount);
 
         SDL_Surface* mSurface = nullptr;
         const SDL_PixelFormatDetails *mPixelFormatDetails = nullptr;
