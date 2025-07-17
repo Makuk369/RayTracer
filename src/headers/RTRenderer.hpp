@@ -11,7 +11,6 @@ class RTRenderer{
         RTRenderer(SDL_Surface* surface, const Camera& camera);
 
         void Render(const Scene& scene);
-        void RenderAntiAliased(const Scene& scene);
 
         void Reset();
 

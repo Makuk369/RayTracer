@@ -41,6 +41,10 @@ void RTRenderer::Render(const Scene& scene){
 			ray.origin = mCamera.GetPosition();
 			ray.direction = mCamera.GetRayDirections()[x + y * mSurface->w];
 
+			if (RTSetings::USE_ANTI_ALIASING){
+				ray.direction += RTUtils::RandomSquare() * mCamera.GetPixelDelta();
+			}
+
 			// glm::vec3 color = PerPixel(ray, mMaxBounces);
 			glm::vec3 color = PerPixel(ray);
 			mAccumulationData[x + y * mSurface->w] += color;
@@ -58,77 +62,7 @@ void RTRenderer::Render(const Scene& scene){
 	SDL_UnlockSurface(mSurface);
 }
 
-// void RTRenderer::RenderAntiAliased(const Scene& scene){
-// 	SDL_LockSurface(mSurface);
-
-// 	mCurrentScene = &scene;
-
-// 	float pixelSamplesScale = 1.0 / RTSetings::SAMPLES_PER_PIXEL;
-
-// 	std::for_each(std::execution::par, mVerticalIter.begin(), mVerticalIter.end(),
-// 	[this, pixelSamplesScale](int y)
-// 	{
-// 		for (int x = 0; x < mSurface->w; x++)
-// 		{
-// 			Ray ray;
-			
-// 			glm::vec4 color{0.0f};
-			
-// 			for (int sample = 0; sample < RTSetings::SAMPLES_PER_PIXEL; sample++){
-// 				ray.origin = mCamera.GetPosition();
-// 				ray.direction = mCamera.GetRayDirections()[sample + (x * RTSetings::SAMPLES_PER_PIXEL) + (y * mSurface->w * RTSetings::SAMPLES_PER_PIXEL)];
-
-// 				color += PerPixel(ray, mMaxBounces);
-// 			}
-			
-// 			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
-// 			*targetPixel = RTUtils::Vec4ToARGB(color * pixelSamplesScale);
-// 		}
-// 	});
-
-// 	SDL_UnlockSurface(mSurface);
-// }
-
-// returns color of pixel (format = ARGB 0xff000000)
-/*
-glm::vec4 RTRenderer::PerPixel(Ray& ray)
-{
-	HitRecord hitRecord;
-
-	uint32_t randSeed = SDL_rand_bits();
-
-	glm::vec3 color{0.0f};
-	glm::vec3 colorContribution{1.0f};
-	glm::vec3 finalColor{1.0f};
-
-	for (size_t bounce = 0; bounce < mMaxBounces; bounce++){
-		if(!mCurrentScene->HitObjects(ray, Interval(0.0f, RTUtilVars::INFINITE_F), hitRecord)){  // didn't hit (hit sky) == no more bounces
-
-			finalColor *= glm::vec3{0.7f, 0.8f, 1.0f} * colorContribution; // sky color = glm::vec3{0.7f, 0.8f, 1.0f}
-			break;
-		}
-		// ray.origin = hitRecord.position + hitRecord.normal * 0.0001f;
-
-		// ray.direction = hitRecord.normal + glm::normalize(RTUtils::RandomVec3(randSeed));
-
-		// ray.direction = glm::reflect(ray.direction, hitRecord.normal + RTUtils::RandomVec3(randSeed) * 0.0f);
-		// if(glm::dot(ray.direction, hitRecord.normal) < 0){
-		// 	color = glm::vec3{0.7f, 0.8f, 1.0f} * colorContribution; // sky color = glm::vec3{0.6f, 0.7f, 0.9f}
-		// 	break;
-		// }
-
-		if(!hitRecord.mat->Scatter(ray, hitRecord, color)) // didnt manage to scatter
-		{
-			finalColor *= glm::vec3{0.1f};
-		}
-		finalColor *= color * colorContribution;
-		
-		colorContribution *= glm::vec3{0.5f}; // color loss after bounce
-	}
-	return glm::vec4{finalColor, 1.0f};
-}
-*/
-
+// returns color of pixel
 // recursive
 glm::vec3 RTRenderer::PerPixel(Ray& ray, int bounceCount)
 {

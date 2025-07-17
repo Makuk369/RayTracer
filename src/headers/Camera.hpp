@@ -10,12 +10,10 @@ class Camera
 
         const glm::vec3& GetPosition() const { return mPosition; };
         const std::vector<glm::vec3>& GetRayDirections() const { return mRayDirections; }
-        const glm::vec3& GetViewportU() const { return mViewportU; };
-        const glm::vec3& GetViewportV() const { return mViewportV; };
+        const glm::vec3 GetPixelDelta() const { return mPixelDeltaU + mPixelDeltaV; };
 
     private:
         void RecalculateRayDirections();
-        void RecalculateRayDirectionsAntiAliased();
 
         int mSurfaceWidth = 0;
         int mSurfaceHeight = 0;

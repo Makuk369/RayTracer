@@ -60,12 +60,14 @@ void App::Run(){
 	// Materials
 	std::shared_ptr<Material> groundMat = std::make_shared<Lambertian>(glm::vec3{1.0f, 0.0f, 0.0f});
 	std::shared_ptr<Material> greenMat = std::make_shared<Lambertian>(glm::vec3{0.0f, 1.0f, 0.0f});
+	// std::shared_ptr<Material> blueMat = std::make_shared<Lambertian>(glm::vec3{0.0f, 0.0f, 1.0f});
 	// std::shared_ptr<Material> leftMat = std::make_shared<Metal>(glm::vec3{0.8f, 0.8f, 0.8f}, 0.3f);
 	// std::shared_ptr<Material> rightMat = std::make_shared<Metal>(glm::vec3{0.8f, 0.6f, 0.2f}, 1.0f);
 
 	Scene scene1;
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, -100.5f, -1.0f}, 100.0f, groundMat));
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.2f}, 0.5f, greenMat));
+	// scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, 0.0f}, 0.5f, blueMat));
 	// scene1.Add(std::make_shared<Sphere>(glm::vec3{-1.0f, 0.0f, -1.0f}, 0.5f, leftMat));
 	// scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, -1.0f}, 0.5f, rightMat));
 
@@ -76,15 +78,20 @@ void App::Run(){
 
 		while(SDL_PollEvent(&event) != 0)
 		{
-			if(event.type == SDL_EVENT_QUIT)
-			{
+			if(event.type == SDL_EVENT_QUIT){
 				isRunning = false;
 			}
 			else if(event.type == SDL_EVENT_KEY_DOWN)
 			{
-				if(event.key.key == SDLK_R)
-				{
+				if(event.key.key == SDLK_ESCAPE){
+					isRunning = false;
+				}
+				if(event.key.key == SDLK_R){
 					renderer.Reset();
+				}
+				if(event.key.key == SDLK_T){
+					RTSetings::USE_ANTI_ALIASING = !RTSetings::USE_ANTI_ALIASING;
+					SDL_Log("Anti-Aliasing set to: %s\n", RTSetings::USE_ANTI_ALIASING ? "on" : "off");
 				}
 			}
 
@@ -98,11 +105,7 @@ void App::Run(){
 			frameCount++;
 
 			renderTimer.Start();
-			if(RTSetings::USE_ANTI_ALIASING){
-				renderer.RenderAntiAliased(scene1);
-			}else{
-				renderer.Render(scene1);
-			}
+			renderer.Render(scene1);
 			renderTimeTotal += renderTimer.getTicks();
 			
 			//Update screen

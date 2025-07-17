@@ -4,12 +4,10 @@
 namespace RTSetings{
 
     inline const bool SHOW_FPS = true;
-    inline const uint16_t MAX_FPS = 60;
+    inline const uint16_t MAX_FPS = 40;
 
-    // performance and RAM heavy if used
-    inline const bool USE_ANTI_ALIASING = false;
-    // used for anti-aliasing
-    inline const int SAMPLES_PER_PIXEL = 10;
+    // lower performance if used
+    inline bool USE_ANTI_ALIASING = false;
 
     inline const float ASPECT_RATIO = 16.0f / 9.0f;
 
