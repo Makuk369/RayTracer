@@ -16,7 +16,8 @@ class RTRenderer{
         void Reset();
 
     private:
-        glm::vec4 PerPixel(Ray& ray, int bounceCount);
+        glm::vec3 PerPixel(Ray& ray, int bounceCount);
+        glm::vec3 PerPixel(Ray& ray);
 
         SDL_Surface* mSurface = nullptr;
         const SDL_PixelFormatDetails *mPixelFormatDetails = nullptr;
@@ -29,8 +30,6 @@ class RTRenderer{
         std::vector<int> mHorizontalIter;
         std::vector<int> mVerticalIter;
 
-        // glm::vec4* mAccumulationData = nullptr;
-        std::vector<glm::vec4> mAccumulationData;
+        std::vector<glm::vec3> mAccumulationData;
         uint32_t mFrameIndex = 1;
-
 };

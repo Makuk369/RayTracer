@@ -24,7 +24,7 @@ RTRenderer::RTRenderer(SDL_Surface* surface, const Camera& camera)
 		mVerticalIter[i] = i;
 	}
 
-	mAccumulationData.resize(mSurface->w * mSurface->h, glm::vec4{0.0f});
+	mAccumulationData.resize(mSurface->w * mSurface->h, glm::vec3{0.0f});
 }
 
 void RTRenderer::Render(const Scene& scene){
@@ -41,14 +41,15 @@ void RTRenderer::Render(const Scene& scene){
 			ray.origin = mCamera.GetPosition();
 			ray.direction = mCamera.GetRayDirections()[x + y * mSurface->w];
 
-			glm::vec4 color = PerPixel(ray, mMaxBounces);
+			// glm::vec3 color = PerPixel(ray, mMaxBounces);
+			glm::vec3 color = PerPixel(ray);
 			mAccumulationData[x + y * mSurface->w] += color;
 
-			glm::vec4 accumulatedColor = mAccumulationData[x + y * mSurface->w];
+			glm::vec3 accumulatedColor = mAccumulationData[x + y * mSurface->w];
 			accumulatedColor /= (float)mFrameIndex;
 
-			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
-			*targetPixel = RTUtils::Vec4ToARGB(accumulatedColor);
+			Uint32 * const targetPixel = (Uint32*) ((Uint8*) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
+			*targetPixel = RTUtils::Vec4ToARGB(glm::vec4{accumulatedColor, 1.0f});
 		}
 	});
 
@@ -57,36 +58,36 @@ void RTRenderer::Render(const Scene& scene){
 	SDL_UnlockSurface(mSurface);
 }
 
-void RTRenderer::RenderAntiAliased(const Scene& scene){
-	SDL_LockSurface(mSurface);
+// void RTRenderer::RenderAntiAliased(const Scene& scene){
+// 	SDL_LockSurface(mSurface);
 
-	mCurrentScene = &scene;
+// 	mCurrentScene = &scene;
 
-	float pixelSamplesScale = 1.0 / RTSetings::SAMPLES_PER_PIXEL;
+// 	float pixelSamplesScale = 1.0 / RTSetings::SAMPLES_PER_PIXEL;
 
-	std::for_each(std::execution::par, mVerticalIter.begin(), mVerticalIter.end(),
-	[this, pixelSamplesScale](int y)
-	{
-		for (int x = 0; x < mSurface->w; x++)
-		{
-			Ray ray;
+// 	std::for_each(std::execution::par, mVerticalIter.begin(), mVerticalIter.end(),
+// 	[this, pixelSamplesScale](int y)
+// 	{
+// 		for (int x = 0; x < mSurface->w; x++)
+// 		{
+// 			Ray ray;
 			
-			glm::vec4 color{0.0f};
+// 			glm::vec4 color{0.0f};
 			
-			for (int sample = 0; sample < RTSetings::SAMPLES_PER_PIXEL; sample++){
-				ray.origin = mCamera.GetPosition();
-				ray.direction = mCamera.GetRayDirections()[sample + (x * RTSetings::SAMPLES_PER_PIXEL) + (y * mSurface->w * RTSetings::SAMPLES_PER_PIXEL)];
+// 			for (int sample = 0; sample < RTSetings::SAMPLES_PER_PIXEL; sample++){
+// 				ray.origin = mCamera.GetPosition();
+// 				ray.direction = mCamera.GetRayDirections()[sample + (x * RTSetings::SAMPLES_PER_PIXEL) + (y * mSurface->w * RTSetings::SAMPLES_PER_PIXEL)];
 
-				color += PerPixel(ray, mMaxBounces);
-			}
+// 				color += PerPixel(ray, mMaxBounces);
+// 			}
 			
-			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
-			*targetPixel = RTUtils::Vec4ToARGB(color * pixelSamplesScale);
-		}
-	});
+// 			Uint32 * const targetPixel = (Uint32 *) ((Uint8 *) mSurface->pixels + y * mSurface->pitch + x * mPixelFormatDetails->bytes_per_pixel);
+// 			*targetPixel = RTUtils::Vec4ToARGB(color * pixelSamplesScale);
+// 		}
+// 	});
 
-	SDL_UnlockSurface(mSurface);
-}
+// 	SDL_UnlockSurface(mSurface);
+// }
 
 // returns color of pixel (format = ARGB 0xff000000)
 /*
@@ -128,12 +129,13 @@ glm::vec4 RTRenderer::PerPixel(Ray& ray)
 }
 */
 
-glm::vec4 RTRenderer::PerPixel(Ray& ray, int bounceCount)
+// recursive
+glm::vec3 RTRenderer::PerPixel(Ray& ray, int bounceCount)
 {
 	// If we've exceeded the ray bounce limit, no more light is gathered.
 	if(bounceCount <= 0)
 	{
-		return glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
+		return glm::vec3{0.0f, 0.0f, 0.0f};
 	}
 
 	HitRecord hitRec;
@@ -141,19 +143,44 @@ glm::vec4 RTRenderer::PerPixel(Ray& ray, int bounceCount)
 	if(mCurrentScene->HitObjects(ray, Interval(0.0f, RTUtilVars::INFINITE_F), hitRec))
 	{
 		Ray scatteredRay;
-		glm::vec4 color;
+		glm::vec3 color;
 		if(hitRec.mat->Scatter(ray, hitRec, color, scatteredRay))
 		{
 			return color * PerPixel(scatteredRay, bounceCount-1);
 		}
-		return glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
+		return glm::vec3{0.0f, 0.0f, 0.0f};
 	}
 
-	return glm::vec4{0.7f, 0.8f, 1.0f, 1.0f}; // sky
+	return glm::vec3{1.0f, 1.0f, 1.0f}; // sky
+}
+
+// loop
+glm::vec3 RTRenderer::PerPixel(Ray& ray)
+{
+	glm::vec3 finalColor{1.0f};
+	glm::vec3 color;
+	HitRecord hitRec;
+
+	for (size_t bounce = 0; bounce < mMaxBounces; bounce++)
+	{
+		if(mCurrentScene->HitObjects(ray, Interval(0.0f, RTUtilVars::INFINITE_F), hitRec))
+		{
+			if(hitRec.mat->Scatter(ray, hitRec, color))
+			{
+				finalColor *= color;
+				continue;
+			}
+		}
+
+		// no hit
+		finalColor *= glm::vec3{1.0f, 1.0f, 1.0f}; // sky
+		break;
+	}
+	return finalColor;
 }
 
 void RTRenderer::Reset()
 {
-	std::fill(mAccumulationData.begin(), mAccumulationData.end(), glm::vec4{0.0f});
+	std::fill(mAccumulationData.begin(), mAccumulationData.end(), glm::vec3{0.0f});
 	mFrameIndex = 1;
 }

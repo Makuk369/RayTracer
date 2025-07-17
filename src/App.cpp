@@ -58,16 +58,16 @@ void App::Run(){
 	RTRenderer renderer(mWindowSurface, camera);
 
 	// Materials
-	std::shared_ptr<Material> groundMat = std::make_shared<Lambertian>(glm::vec4{0.8f, 0.8f, 0.0f, 1.0f});
-	std::shared_ptr<Material> blueMat = std::make_shared<Lambertian>(glm::vec4{0.1f, 0.2f, 0.5f, 1.0f});
-	std::shared_ptr<Material> leftMat = std::make_shared<Metal>(glm::vec4{0.8f, 0.8f, 0.8f, 1.0f}, 0.3f);
-	std::shared_ptr<Material> rightMat = std::make_shared<Metal>(glm::vec4{0.8f, 0.6f, 0.2f, 1.0f}, 1.0f);
+	std::shared_ptr<Material> groundMat = std::make_shared<Lambertian>(glm::vec3{1.0f, 0.0f, 0.0f});
+	std::shared_ptr<Material> greenMat = std::make_shared<Lambertian>(glm::vec3{0.0f, 1.0f, 0.0f});
+	// std::shared_ptr<Material> leftMat = std::make_shared<Metal>(glm::vec3{0.8f, 0.8f, 0.8f}, 0.3f);
+	// std::shared_ptr<Material> rightMat = std::make_shared<Metal>(glm::vec3{0.8f, 0.6f, 0.2f}, 1.0f);
 
 	Scene scene1;
 	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, -100.5f, -1.0f}, 100.0f, groundMat));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.2f}, 0.5f, blueMat));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{-1.0f, 0.0f, -1.0f}, 0.5f, leftMat));
-	scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, -1.0f}, 0.5f, rightMat));
+	scene1.Add(std::make_shared<Sphere>(glm::vec3{0.0f, 0.0f, -1.2f}, 0.5f, greenMat));
+	// scene1.Add(std::make_shared<Sphere>(glm::vec3{-1.0f, 0.0f, -1.0f}, 0.5f, leftMat));
+	// scene1.Add(std::make_shared<Sphere>(glm::vec3{1.0f, 0.0f, -1.0f}, 0.5f, rightMat));
 
 	// ---------- MAIN GAME LOOP ----------
 	while(isRunning)
@@ -92,7 +92,8 @@ void App::Run(){
     	}
 
 		updateDelay -= deltaTime;
-		if(updateDelay <= 0.f){
+		if(updateDelay <= 0.f)
+		{
 			updateDelay = 1.f/RTSetings::MAX_FPS;
 			frameCount++;
 
@@ -108,9 +109,11 @@ void App::Run(){
 			SDL_UpdateWindowSurface(mWindow);
 		}
 
-		if(RTSetings::SHOW_FPS){
+		if(RTSetings::SHOW_FPS)
+		{
 			fpsTimer -= deltaTime;
-			if(fpsTimer <= 0.f){
+			if(fpsTimer <= 0.f)
+			{
 				fpsTimer = 1.f;
 				SDL_Log("FPS = %u; %.2fms per render\n", frameCount, (float)renderTimeTotal / (float)frameCount);
 				frameCount = 0;
