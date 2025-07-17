@@ -5,7 +5,6 @@ Lambertian::Lambertian(const glm::vec3& albedo)
     : mAlbedo(albedo)
 {}
 
-
 bool Lambertian::Scatter(Ray& ray, const HitRecord& hitRec, glm::vec3& color) const
 {
     glm::vec3 scatterDir = hitRec.normal + RTUtils::RandomUnitVec3();
@@ -44,9 +43,12 @@ Metal::Metal(const glm::vec3& albedo, float roughness)
     : mAlbedo(albedo), mRoughness(roughness < 1.0f ? roughness : 1.0f)
 {}
 
-
 bool Metal::Scatter(Ray& ray, const HitRecord& hitRec, glm::vec3& color) const
 {
+    // ver 2
+    // glm::vec3 reflectDir = glm::reflect(ray.direction, hitRec.normal + mRoughness * (RTUtils::RandomUnitVec3()/2.0f));
+
+    // ver 1
     glm::vec3 reflectDir = glm::reflect(ray.direction, hitRec.normal);
     reflectDir = glm::normalize(reflectDir) + (mRoughness * RTUtils::RandomUnitVec3());
 

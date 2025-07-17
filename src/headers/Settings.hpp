@@ -1,10 +1,9 @@
 #pragma once
-#include <limits>
 
 namespace RTSetings{
 
     inline const bool SHOW_FPS = true;
-    inline const uint16_t MAX_FPS = 40;
+    inline const uint16_t MAX_FPS = 30;
 
     // lower performance if used
     inline bool USE_ANTI_ALIASING = false;

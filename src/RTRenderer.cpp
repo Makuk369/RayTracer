@@ -95,8 +95,10 @@ glm::vec3 RTRenderer::PerPixel(Ray& ray)
 	glm::vec3 color;
 	HitRecord hitRec;
 
-	for (size_t bounce = 0; bounce < mMaxBounces; bounce++)
+	int bounce = mMaxBounces - 1;
+	while (bounce > 0)
 	{
+		bounce--;
 		if(mCurrentScene->HitObjects(ray, Interval(0.0f, RTUtilVars::INFINITE_F), hitRec))
 		{
 			if(hitRec.mat->Scatter(ray, hitRec, color))
@@ -104,12 +106,18 @@ glm::vec3 RTRenderer::PerPixel(Ray& ray)
 				finalColor *= color;
 				continue;
 			}
+			return glm::vec3{0.0f};
 		}
 
 		// no hit
-		finalColor *= glm::vec3{1.0f, 1.0f, 1.0f}; // sky
+		finalColor *= glm::vec3{0.7f, 0.8f, 1.0f}; // sky
 		break;
 	}
+
+	if(bounce == 0){
+		return glm::vec3{0.0f};
+	}
+
 	return finalColor;
 }
 

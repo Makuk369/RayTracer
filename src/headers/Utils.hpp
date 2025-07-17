@@ -6,6 +6,13 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/norm.hpp"
 
+namespace RTUtilVars
+{
+    inline const float INFINITE_F = std::numeric_limits<float>::infinity();
+    inline uint32_t GLOBAL_SEED = SDL_rand_bits();
+    
+} // namespace RTUtilVars
+
 namespace RTUtils
 {
     inline uint32_t Vec4ToARGB(glm::vec4 colorVec)
@@ -29,8 +36,9 @@ namespace RTUtils
         return (word >> 22u) ^ word;
     }
 
-    inline float RandomFloat(uint32_t& seed)
+    inline float RandomFloat()
     {
+        uint32_t& seed = RTUtilVars::GLOBAL_SEED;
         seed = PCGHash(seed);
         return (float)seed / (float)std::numeric_limits<uint32_t>::max();
     }
@@ -38,36 +46,24 @@ namespace RTUtils
     // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square.
     inline glm::vec3 RandomSquare()
     {
-        return glm::vec3{SDL_randf() - 0.5f, SDL_randf() - 0.5f, 0.0f};
+        return glm::vec3{RandomFloat() - 0.5f, RandomFloat() - 0.5f, 0.0f};
     }
 
-    // Returns random vec3, x,y,z are in range [-1,1], using PCG
-    inline glm::vec3 RandomVec3(uint32_t& seed)
-    {
-        return glm::vec3{RandomFloat(seed) * 2.0f - 1.0f, RandomFloat(seed) * 2.0f - 1.0f, RandomFloat(seed) * 2.0f - 1.0f};
-    }
-    // Returns random vec3, x,y,z are in range [-1,1], using SDL_randf
+    // Returns random vec3, x,y,z are in range [-1,1]
     inline glm::vec3 RandomVec3()
     {
-        return glm::vec3{SDL_randf() * 2.0f - 1.0f, SDL_randf() * 2.0f - 1.0f, SDL_randf() * 2.0f - 1.0f};
+        return glm::vec3{RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f};
     }
 
     inline glm::vec3 RandomUnitVec3()
     {
-        while(true)
-        {
-            glm::vec3 p = RandomVec3();
-            float lensq = glm::length2(p);
-            if(1e-160 < lensq && lensq <= 1){
-                return p / glm::sqrt(lensq);
-            }
-        }
+        return glm::normalize(glm::vec3{RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f});
     }
 
     // Returned vec3 is normalized
-    inline glm::vec3 RandomOnHemisphere(uint32_t& seed, const glm::vec3& normal)
+    inline glm::vec3 RandomOnHemisphere(const glm::vec3& normal)
     {
-        glm::vec3 v = glm::normalize(RandomVec3(seed));
+        glm::vec3 v = glm::normalize(glm::vec3{RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f, RandomFloat() * 2.0f - 1.0f});
         if(glm::dot(v, normal) > 0.0f){ // In the same hemisphere as the normal
             return v;
         }else{
@@ -82,10 +78,4 @@ namespace RTUtils
     }
     
 } // namespace RTUtils
-
-namespace RTUtilVars
-{
-    inline const float INFINITE_F = std::numeric_limits<float>::infinity();
-    
-} // namespace RTUtilVars
 
